@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<!--
+Version Control:
+1. $git init (to undo : $rm -rf .git)  -> Starting a Project
+2. $git status -> Shows which files are new, changed, or ready to save (commit). 
+3. $git add filename / $git add -> Tells Git: “Hey, I want to save these changes.”
+4. $git commit -m "Message" -> Actually saves the changes with a message.
+5. git restore [filename] -> Discards changes in a file you don’t want anymore.
+6. git reset -> Unstages files you added with git add.
+7. git branch new-feature -> a parallel universe to try new stuff without breaking main work.
+8. git checkout new-feature -> Switch between universes with checkout.
+9. git merge new-feature -> Combines changes from one branch into another.
+10. git remote add origin URL -> Here’s where I want to upload my project online.
+11. git push -u origin main -> Send my changes online
+12. git pull -> Bring changes from online to my computer.
+-->
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Home</title>
+    <link rel="stylesheet" href="Styles.css">
+</head>
+<body>
+    <header class="top-bar">
+    <div id="welcomeMessage"></div>
+    <button onclick="window.location.href='MyAccount.html'">Account Details</button>
+    </header>
+    <header class="top-bar">
+      <div class="left">
+        <h2>Welcome to the Website</h2>
+      </div>
+      <div class="right" id="userProfile">
+      <!-- Profile picture + username will load here -->
+      </div>
+    </header>
+    <header>
+        <h1>My Website</h1>
+        <nav>
+            <a href="MainPage.html">Home</a>
+            <a href="About.html">About</a>
+            <a href="Login.html">Login</a>
+        </nav>
+    </header>
+
+    <div class="container">
+        <h2>Welcome to the Home Page</h2>
+        <p>This is the main page of the website. You can navigate using the menu above.</p>
+    </div>
+    <script>
+    // ✅ Load username from localStorage
+    const user = localStorage.getItem("username");
+    if (user) {
+      document.getElementById("welcomeMessage").textContent = `Welcome, ${user}!`;
+    } else {
+      document.getElementById("welcomeMessage").textContent = "Welcome, Guest!";
+    }
+  </script>
+</body>
+</html>

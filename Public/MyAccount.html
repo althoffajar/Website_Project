@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Account Page</title>
+  <link rel="stylesheet" href="Styles.css" />
+</head>
+<body>
+  <div class="profile-container">
+    <div class="left">
+        <button onclick="window.location.href='MainPage.html'">⬅</button>
+    </div>
+    <h2>My Profile</h2>
+    <!-- 🔹 Details View (default visible) -->
+    <div id="profileDetails">
+      <div class="profile-pic">
+        <img id="profileImage" src="default.png" alt="Profile Picture" />
+      </div>
+      <p><strong>Full Name:</strong> <span id="displayFullname">Not set</span></p>
+      <p><strong>Email:</strong> <span id="displayEmail">Not set</span></p>
+      <p><strong>Description:</strong> <span id="displayDescription">Not set</span></p>
+      <button id="editBtn" class="btn">✏️ Edit Details</button>
+    </div>
+
+    <!-- 🔹 Edit Form (hidden by default) -->
+    <form id="profileForm" enctype="multipart/form-data" style="display:none;">
+      <div class="profile-pic">
+        <img id="profilePreview" src="default.png" alt="Preview" />
+        <input type="file" id="profilePic" name="profilePic" accept="image/*" />
+      </div>
+
+      <input type="text" id="fullname" name="fullname" placeholder="Full Name" />
+      <input type="email" id="email" name="email" placeholder="Email Address" />
+      <textarea id="description" name="description" placeholder="Description"></textarea>
+
+      <button type="submit" class="btn">💾 Save Profile</button>
+      <button type="button" id="cancelBtn" class="btn danger">❌ Cancel</button>
+    </form>
+
+    <p id="profileMessage"></p>
+    
+    <!-- 🔹 Account Actions -->
+    <div class="account-actions">
+      <button id="logoutBtn" class="btn danger">🚪 Log Out</button>
+      <button id="deleteBtn" class="btn danger">🗑 Delete Account</button>
+    </div>
+  </div>
+
+  <script src="MyAccount.js"></script>
+</body>
+</html>
+
+<!-- <!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Account Page</title>
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+  <header class="top-bar">
+    <div id="welcomeMessage"></div>
+    <button onclick="window.location.href='MainPage.html'">⬅ Back to Main Page</button>
+  </header>
+
+  <div class="profile-container">
+    <h2>My Profile</h2>
+    <form id="profileForm" enctype="multipart/form-data">
+      <div class="profile-pic">
+        <img id="profileImage" src="default.png" alt="Profile Picture" />
+        <input type="file" id="profilePic" name="profilePic" accept="image/*" />
+      </div>
+
+      <input type="text" id="fullname" name="fullname" placeholder="Full Name" />
+      <input type="email" id="email" name="email" placeholder="Email Address" />
+      <textarea id="description" name="description" placeholder="Description"></textarea>
+
+      <button type="submit" class="btn">Save Profile</button>
+    </form>
+    <p id="profileMessage"></p>
+    
+    <div class="account-actions">
+      <button id="logoutBtn" class="btn danger">🚪 Log Out</button>
+      <button id="deleteBtn" class="btn danger">🗑 Delete Account</button>
+    </div>
+  </div>
+
+  <script src="account.js"></script>
+</body>
+</html>
+ ->

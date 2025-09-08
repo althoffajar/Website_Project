@@ -1,0 +1,44 @@
+<!-- ------------------------------------------------FRONTEND------------------------------------------------------------------- -->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Login / Register</title>
+  <link rel="stylesheet" href="Styles.css" />
+</head>
+<body>
+  <!-- Login Form -->
+  <div id="loginContainer" class="container">
+    <h2>Login</h2>
+    <form id="loginForm">
+      <input type="text" id="username" placeholder="Username" required />
+      <input type="password" id="password" placeholder="Password" required />
+      <button type="submit">Login</button>
+    </form>
+    <p id="loginMessage"></p>
+    <p>
+      Don’t have an account?
+      <button type="button" onclick="showRegisterForm()">Create one</button>
+    </p>
+    <button class="back-btn" onclick="window.location.href='MainPage.html'">⬅ Back to Main Page</button>
+  </div>
+
+  <!-- Register Form (hidden by default) -->
+  <div id="registerContainer" style="display: none"  class="container">
+    <h2>Create Account</h2>
+    <form id="registerForm">
+      <input type="text" id="regUsername" placeholder="Choose a username" required />
+      <input type="password" id="regPassword" placeholder="Choose a password" required />
+      <button type="submit">Register</button>
+    </form>
+    <p id="registerMessage"></p>
+    <p>
+      Already have an account?
+      <button type="button" onclick="showLoginForm()">Back to Login</button>
+    </p>
+  </div>
+
+  <script src="script.js"></script>
+</body>
+</html>
