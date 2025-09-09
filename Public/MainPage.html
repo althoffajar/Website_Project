@@ -1,10 +1,11 @@
 <!DOCTYPE html>
 <!--
 Version Control:
-1. $git init (to undo : $rm -rf .git)  -> Starting a Project
+1. git remote add origin https://github.com/your-username/my-project.git -> Inserts local project to git link
+1. $git init (to undo : $rm -rf .git)  -> Initialize git, Starting a Project
 2. $git status -> Shows which files are new, changed, or ready to save (commit). 
-3. $git add filename / $git add -> Tells Git: “Hey, I want to save these changes.”
-4. $git commit -m "Message" -> Actually saves the changes with a message.
+3. $git add filename / $git add . -> Tells Git: “Hey, I want to save these changes.”
+4. $git commit -m "Message" (e.g git commit -m "Initial commit") -> Actually saves the changes with a message.
 5. git restore [filename] -> Discards changes in a file you don’t want anymore.
 6. git reset -> Unstages files you added with git add.
 7. git branch new-feature -> a parallel universe to try new stuff without breaking main work.
@@ -13,6 +14,8 @@ Version Control:
 10. git remote add origin URL -> Here’s where I want to upload my project online.
 11. git push -u origin main -> Send my changes online
 12. git pull -> Bring changes from online to my computer.
+13. git config --global user.name "Althof Pandyansa Fajar"
+14. git config --global user.email "your_email@example.com"
 -->
 <html lang="en">
 <head>
@@ -39,7 +42,7 @@ Version Control:
         <nav>
             <a href="MainPage.html">Home</a>
             <a href="About.html">About</a>
-            <a href="Login.html">Login</a>
+            <!--<a href="Login.html">Login</a>-->
         </nav>
     </header>
 
@@ -56,5 +59,7 @@ Version Control:
       document.getElementById("welcomeMessage").textContent = "Welcome, Guest!";
     }
   </script>
+  <div id="accountLinks" style="text-align:right; margin:12px;"></div>
+  <script src="script.js"></script>
 </body>
 </html>

@@ -9,22 +9,26 @@
 // 4. To auto-restart                                 : nodemon Server.js
 // 5. remove old db -> rm DB.sqlite
 
-
+// ------------------------------------------------Backend-------------------------------------------------------------------
 const express = require("express");
 const sqlite3 = require("sqlite3").verbose();
 const bodyParser = require("body-parser");
 const path = require("path");
+const multer = require("multer");
+const fs = require("fs");
 
-// Create express app
 const app = express();
 const PORT = 3000;
 
-// Middleware
+// Ensure uploads folder exists
+if (!fs.existsSync(path.join(__dirname, "public", "uploads"))) {
+  fs.mkdirSync(path.join(__dirname, "public", "uploads"), { recursive: true });
+}
+
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(express.static(path.join(__dirname, "public"))); // Serve frontend files
 
-// Connect to SQLite database (or create if doesn't exist)
 const db = new sqlite3.Database("./DB.sqlite", (err) => {
   if (err) console.error(err.message);
   else console.log("✅ Connected to SQLite database.");
@@ -34,155 +38,116 @@ db.serialize(() => {
   db.run(`CREATE TABLE IF NOT EXISTS users (
       id INTEGER PRIMARY KEY AUTOINCREMENT,
       username TEXT UNIQUE,
-      password TEXT
+      password TEXT,
+      fullname TEXT,
+      email TEXT,
+      description TEXT,
+      profilePic TEXT
   )`);
 
-  db.run(`ALTER TABLE users ADD COLUMN fullname TEXT`, (err) => {
-    if (err) console.log("ℹ️ fullname already exists");});
-  db.run(`ALTER TABLE users ADD COLUMN email TEXT`, (err) => {
-    if (err) console.log("ℹ️ email already exists");});
-  db.run(`ALTER TABLE users ADD COLUMN description TEXT`, (err) => {
-    if (err) console.log("ℹ️ description already exists");});
-  db.run(`ALTER TABLE users ADD COLUMN profilePic TEXT`, (err) => {
-    if (err) console.log("ℹ️ profilePic already exists");
-});
-
-  db.run(`INSERT OR IGNORE INTO users (username, password, fullname, email, description, profilePic) 
+  db.run(`INSERT OR IGNORE INTO users (username, password, fullname, email, description, profilePic)
           VALUES (?, ?, ?, ?, ?, ?)`, [
     "admin",
     "12345",
     "Administrator",
     "admin@example.com",
     "Default admin account",
-    "default.png"
+    "/uploads/default.png"
   ]);
 });
 
-/*
-db.serialize(() => {
-  db.run(`CREATE TABLE IF NOT EXISTS users (
-      id INTEGER PRIMARY KEY AUTOINCREMENT,
-      username TEXT UNIQUE,
-      password TEXT
-  )`);
-
-  db.run(`INSERT OR IGNORE INTO users (username, password) VALUES (?, ?)`, [
-    "admin",
-    "12345",
-  ]);
-});*/
-
-
-// API route: login
-app.post("/Login", (req, res) => {
-  const { username, password } = req.body;
-
-  db.get(
-    "SELECT * FROM users WHERE username = ? AND password = ?",
-    [username, password],
-    (err, row) => {
-      if (err) {
-        res.status(500).json({ success: false, message: "Database error." });
-      } else if (row) {
-        res.json({ success: true, message: "Login successful!" });
-      } else {
-        res.json({ success: false, message: "Invalid credentials." });
-      }
-    }
-  );
-});
-
-// API route: register
-app.post("/register", (req, res) => {
-  const { username, password } = req.body;
-
-  db.run(
-    "INSERT INTO users (username, password) VALUES (?, ?)",
-    [username, password],
-    function (err) {
-      if (err) {
-        if (err.message.includes("UNIQUE constraint")) {
-          res.json({ success: false, message: "Username already exists." });
-        } else {
-          console.error("❌ DB error:", err.message);
-          res.status(500).json({ success: false, message: "Database error." });
-        }
-      } else {
-        res.json({ success: true, message: "Account created successfully!" });
-      }
-    }
-  );
-});
-
-const multer = require("multer");
-
-//API Router : My Account Page
-// Configure file upload (profile pictures go into /public/uploads)
-const storage = multer.diskStorage({ 
-  destination: (req, file, cb) => cb(null, "public/uploads"),
+// multer config
+const storage = multer.diskStorage({
+  destination: (req, file, cb) => cb(null, path.join("public", "uploads")),
   filename: (req, file, cb) => cb(null, Date.now() + "-" + file.originalname),
 });
 const upload = multer({ storage });
 
-// Get profile
-app.get("/profile/:username", (req, res) => {
-  const { username } = req.params;
+// Login (case-insensitive username comparison)
+app.post("/Login", (req, res) => {
+  const { username, password } = req.body;
   db.get(
-    "SELECT username, fullname, email, description, profilePic FROM users WHERE username = ?",
-    [username],
+    "SELECT * FROM users WHERE LOWER(username) = LOWER(?) AND password = ?",
+    [username, password],
     (err, row) => {
-      if (err) {
-        res.status(500).json({ success: false, message: "Database error." });
-      } else {
-        res.json(row || {});
-      }
+      if (err) return res.status(500).json({ success: false, message: "Database error." });
+      if (!row) return res.json({ success: false, message: "Invalid credentials." });
+      // return the canonical username stored in DB (correct casing)
+      return res.json({ success: true, message: "Login successful!", username: row.username });
     }
   );
 });
 
-// Update profile
-app.post("/profile/:username", upload.single("profilePic"), (req, res) => {
-  const { username } = req.params;
-  const { fullname, email, description } = req.body;
-  const profilePic = req.file ? "/uploads/" + req.file.filename : null;
-
-  db.run(
-    `UPDATE users 
-     SET fullname = ?, email = ?, description = ?, 
-         profilePic = COALESCE(?, profilePic) 
-     WHERE username = ?`,
-    [fullname, email, description, profilePic, username],
-    function (err) {
-      if (err) {
-        console.error(err);
-        res.status(500).json({ success: false, message: "Database error." });
-      } else {
-        res.json({ success: true, message: "Profile updated successfully!" });
-      }
-    }
-  );
-});
-
-
-// Delete account
-app.delete("/delete/:username", (req, res) => {
-  const { username } = req.params;
-
-  db.run("DELETE FROM users WHERE username = ?", [username], function(err) {
+// Register
+app.post("/register", (req, res) => {
+  const { username, password } = req.body;
+  db.run("INSERT INTO users (username, password) VALUES (?, ?)", [username, password], function (err) {
     if (err) {
-      console.error("❌ DB error:", err.message);
-      res.status(500).json({ success: false, message: "Database error." });
-    } else if (this.changes === 0) {
-      res.json({ success: false, message: "User not found." });
-    } else {
-      res.json({ success: true, message: "Account deleted successfully." });
+      if (err.message.includes("UNIQUE constraint")) {
+        return res.json({ success: false, message: "Username already exists." });
+      }
+      return res.status(500).json({ success: false, message: "Database error." });
     }
+    return res.json({ success: true, message: "Account created successfully!" });
   });
 });
 
+// Get profile (case-insensitive)
+app.get("/profile/:username", (req, res) => {
+  const { username } = req.params;
+  db.get(
+    "SELECT username, fullname, email, description, profilePic FROM users WHERE LOWER(username) = LOWER(?)",
+    [username],
+    (err, row) => {
+      if (err) return res.status(500).json({ success: false, message: "Database error." });
+      if (!row) return res.status(404).json({ success: false, message: "User not found." });
+      return res.json(row);
+    }
+  );
+});
 
+// Update profile (case-insensitive)
+app.post("/profile/:username", upload.single("profilePic"), (req, res) => {
+  const { username } = req.params;
+  const { fullname = null, email = null, description = null } = req.body;
+  const profilePic = req.file ? "/uploads/" + req.file.filename : null;
 
-// Start server
+  db.run(
+    `UPDATE users
+     SET fullname = COALESCE(?, fullname), email = COALESCE(?, email),
+         description = COALESCE(?, description),
+         profilePic = COALESCE(?, profilePic)
+     WHERE LOWER(username) = LOWER(?)`,
+    [fullname, email, description, profilePic, username],
+    function (err) {
+      if (err) return res.status(500).json({ success: false, message: "Database error." });
+      if (this.changes === 0) return res.status(404).json({ success: false, message: "User not found." });
+      return res.json({ success: true, message: "Profile updated successfully." });
+    }
+  );
+});
+
+// Delete account (case-insensitive)
+app.delete("/delete/:username", (req, res) => {
+  const { username } = req.params;
+  db.get("SELECT profilePic FROM users WHERE LOWER(username)=LOWER(?)", [username], (err, row) => {
+    if (err) return res.status(500).json({ success: false, message: "Database error." });
+
+    db.run("DELETE FROM users WHERE LOWER(username)=LOWER(?)", [username], function (err2) {
+      if (err2) return res.status(500).json({ success: false, message: "Database error." });
+      if (this.changes === 0) return res.status(404).json({ success: false, message: "User not found." });
+
+      // optional: delete profilePic file if it exists and not default
+      if (row && row.profilePic && !row.profilePic.includes("default.png")) {
+        const fp = path.join(__dirname, "public", row.profilePic.replace(/^\//, ""));
+        fs.unlink(fp, () => {});
+      }
+
+      return res.json({ success: true, message: "Account deleted successfully." });
+    });
+  });
+});
+
 app.listen(PORT, () => {
   console.log(`🚀 Server running at http://localhost:${PORT}`);
 });
