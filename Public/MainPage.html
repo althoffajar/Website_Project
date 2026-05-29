@@ -1,30 +1,45 @@
 <!DOCTYPE html>
 <!--
-Version Control:
-1. git remote add origin https://github.com/your-username/my-project.git -> Inserts local project to git link
-1. $git init (to undo : $rm -rf .git)  -> Initialize git, Starting a Project
-2. $git status -> Shows which files are new, changed, or ready to save (commit). 
-3. $git add filename / $git add . -> Tells Git: “Hey, I want to save these changes.”
-4. $git commit -m "Message" (e.g git commit -m "Initial commit") -> Actually saves the changes with a message.
-5. git restore [filename] -> Discards changes in a file you don’t want anymore.
-6. git reset -> Unstages files you added with git add.
-7. git branch new-feature -> a parallel universe to try new stuff without breaking main work.
-8. git checkout new-feature -> Switch between universes with checkout.
-9. git merge new-feature -> Combines changes from one branch into another.
-10. git remote add origin URL -> Here’s where I want to upload my project online.
-11. git push -u origin main -> Send my changes online
-12. git pull -> Bring changes from online to my computer.
+Version Control Glossary:
+1. git init (to undo: rm -rf .git) -> Initialize Git, starting a local repository.
+2. git status -> Shows which files are new, changed, or ready to save (staged).
+3. git add filename / git add . -> Stages changes, telling Git: "I want to save these."
+4. git commit -m "Message" -> Permanently saves the staged changes to your history.
+5. git restore [filename] -> Discards local changes in a file you don’t want anymore.
+6. git reset -> Unstages files you mistakenly added with 'git add'.
+7. git branch new-feature -> Creates a parallel universe to try new stuff without breaking main.
+8. git checkout new-feature -> Switch between branches/universes.
+9. git merge new-feature -> Combines changes from another branch into your current one.
+10. git remote add origin URL -> Connects your local project to a remote online repository.
+11. git push -u origin main -> Sends your changes online and remembers the branch link for next time.
+12. git pull -> Fetches and merges changes from the online repository to your computer.
 13. git config --global user.name "Althof Pandyansa Fajar"
 14. git config --global user.email "your_email@example.com"
-git status
 
-To Push Changes (for beginners):
+=========================================
 
-git status -> git add . or git add [filename] [filename2] ... -> git commit -m "message".. 
--> git remote -v -> git remote add origin [link] (skip if shows fetch/pull) ..
--> git push origin main (if on main branch) or git push origin master [name, e.g master]
+To Push a BRAND NEW Project (First Time Setup):
+*Go to GitHub, create a new empty repository (do NOT check "Initialize with README"), then run:*
 
+git init -> git add . -> git commit -m "Initial commit" -> git branch -M main -> git remote add origin [URL] -> git push -u origin main
+                                                                              L-(if not working after yes)-> git remote set-url origin https://github.com/althoffajar/PostingApps.git -> git push -u origin main
+                                                                              L-(if all fails)-> git config --global credential.helper manager -> git push -u origin main -> git push -u origin main                                            
+
+Detailed workflow:
+1. git init                      # Initialize your local folder as a Git repository
+2. git add .                     # Stage all your existing project files
+3. git commit -m "Init project"  # Save your first snapshot
+4. git branch -M main            # Ensure your default branch is named 'main'
+5. git remote add origin [URL]   # Link it to the empty GitHub repo you created
+6. git push -u origin main       # Push up and set the upstream tracking link
+
+=========================================
+
+To Push Existing Changes (Daily Workflow):
+
+git status -> git add . -> git commit -m "your message" -> git push origin main
 -->
+
 <html lang="en">
 <head>
     <meta charset="UTF-8">
